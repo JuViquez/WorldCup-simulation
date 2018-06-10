@@ -22,10 +22,10 @@ int main(){
         cout << " team number "<<i<<group1->teams[i]->name<<endl;
     }
     cout << "-------------------------------" <<endl;
-    sort(group1->teams.begin(),group1->teams.end(),[](const team* lhs, const team* rhs){return lhs->rating > rhs->rating;});
+    sort(group1->teams.begin(),group1->teams.end(),[](const team* lhs, const team* rhs){return lhs->pts > rhs->pts;});
     //group1->teams.sort(sortByRating);
     for(int i = 0; i<4;i++){
-        cout << " team number "<<i<<group1->teams[i]->name<<endl;
+        cout << " team "<<i<<group1->teams[i]->name << " points " <<group1->teams[i]->pts <<endl;
     }
 return 0;
 }
