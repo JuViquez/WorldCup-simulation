@@ -6,6 +6,7 @@ using namespace std;
 class team
 {
     public:
+	team(team* t);
         team(string nameArg, int ratingArg);
         virtual ~team();
         string name;

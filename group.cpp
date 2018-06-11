@@ -5,8 +5,16 @@
 #include <iostream>
 #include <random>
 #include <vector>
+#include <omp.h>
 
 using namespace std;
+
+group::group(group* g){
+    this->teams.push_back(new team(g->teams[3]));
+    this->teams.push_back(new team(g->teams[2]));
+    this->teams.push_back(new team(g->teams[1]));
+    this->teams.push_back(new team(g->teams[0]));
+}
 
 group::group(team* t1,team* t2,team* t3,team* t4)
 {
@@ -41,13 +49,12 @@ void group::generateGroupResults(){
     generateMatch(1,3);
     sort(this->teams.begin(),this->teams.end(),[](const team* lhs, const team* rhs){return lhs->pts > rhs->pts;});
     for(int i = 0; i<4;i++){
-        //cout << " team "<<i<<group1->teams[i]->name << " points " <<group1->teams[i]->pts <<endl;
         this->teams[i]->totalPts = this->teams[i]->pts + this->teams[i]->totalPts;
         if(i==0){
             this->teams[i]->first++;
-        }if(i==1){
+        }else if(i==1){
             this->teams[i]->second++;
-        }if(i==2){
+        }else if(i==2){
             this->teams[i]->third++;
         }else{
             this->teams[i]->fourth++;

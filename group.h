@@ -8,6 +8,7 @@ class group
 {
     public:
         group(team* t1,team* t2,team* t3,team* t4);
+	group(group* g);
         void generateMatch(int t1, int t2);
         void generateGroupResults();
         vector<team*> teams;

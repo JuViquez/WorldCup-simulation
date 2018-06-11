@@ -5,13 +5,32 @@
 #include <vector>
 #include "team.h"
 #include "group.h"
-#include <time.h>
+#include <chrono>
+#include <omp.h>
+#include <stdio.h>
 
 using namespace std;
+using  ms = chrono::milliseconds;
+using get_time = chrono::steady_clock ;
+
+void TotalPoints(group* global, group* local){
+for(int x=0;x<4;x++){
+for(int y = 0; y<4;y++){
+    if(global->teams[x]->name == local->teams[y]->name){
+        global->teams[x]->totalPts += local->teams[y]->totalPts;
+        global->teams[x]->first += local->teams[y]->first;
+        global->teams[x]->second += local->teams[y]->second;
+        global->teams[x]->third += local->teams[y]->third;
+        global->teams[x]->fourth += local->teams[y]->fourth;
+        break;
+    }
+}
+}
+}
 
 int main(){
-    clock_t tStart = clock();
-
+    auto start = get_time::now();
+    
     group* group1 = new group(new team("Rusia",70),new team("Arabia",72),new team("Egipto",78),new team("Uruguay",85));
     group* group2 = new group(new team("Portugal",89),new team("Espana",93),new team("Marruecos",75),new team("Iran",74));
     group* group3 = new group(new team("Francia",90),new team("Australia",79),new team("Peru",78),new team("DInamarca",82));
@@ -20,17 +39,45 @@ int main(){
     group* group6 = new group(new team("ALemania",94),new team("Mexico",82),new team("Suecia",85),new team("Corea",76));
     group* group7 = new group(new team("Belgica",89),new team("Panama",70),new team("Tunez",78),new team("Inglaterra",87));
     group* group8 = new group(new team("Polonia",88),new team("Senegal",76),new team("Colombia",86),new team("Japon",80));
+    #pragma omp parallel num_threads(4)
+    {
+	    group* group1T = new group(group1);
+	    group* group2T = new group(group2);
+            group* group3T = new group(group3);
+	    group* group4T = new group(group4);
+	    group* group5T = new group(group5);
+	    group* group6T = new group(group6);
+	    group* group7T = new group(group7);
+	    group* group8T = new group(group8);
+	
+	    #pragma omp for
+	    for(int i = 0; i<10000;i++){
+		group1T->generateGroupResults();
+		group2T->generateGroupResults();
+		group3T->generateGroupResults();
+		group4T->generateGroupResults();
+		group5T->generateGroupResults();
+		group6T->generateGroupResults();
+		group7T->generateGroupResults();
+		group8T->generateGroupResults();
+	    }
+	    #pragma omp critical
+	    TotalPoints(group1, group1T);
+	    #pragma omp critical
+	    TotalPoints(group2, group2T);
+            #pragma omp critical
+	    TotalPoints(group3, group3T);
+	    #pragma omp critical
+	    TotalPoints(group4, group4T);
+	    #pragma omp critical
+	    TotalPoints(group5, group5T);
+	    #pragma omp critical
+	    TotalPoints(group6, group6T);
+	    #pragma omp critical
+	    TotalPoints(group7, group7T);
+	    #pragma omp critical
+	    TotalPoints(group8, group8T);
 
-    //openMP aqui
-    for(int i = 0; i<100000;i++){
-        group1->generateGroupResults();
-        group2->generateGroupResults();
-        group3->generateGroupResults();
-        group4->generateGroupResults();
-        group5->generateGroupResults();
-        group6->generateGroupResults();
-        group7->generateGroupResults();
-        group8->generateGroupResults();
     }
     cout<<"--------------------------------------- GRUPO A --------------------------------------- "<<endl;
     sort(group1->teams.begin(),group1->teams.end(),[](const team* lhs, const team* rhs){return lhs->totalPts > rhs->totalPts;});
@@ -79,8 +126,9 @@ int main(){
     for(int i = 0; i<4;i++ ){
         cout<< "TEAM -> "<<group8->teams[i]->name<<" PTS-> "<<group8->teams[i]->totalPts << " 1 lugar  " << group8->teams[i]->first << " 2 lugar " << group8->teams[i]->second << " 3 lugar " << group8->teams[i]->third << " 4 lugar "<<group8->teams[i]->fourth << endl;
     }
-
-    printf("Tiempo en ejecucion: %.2fs ",(double)(clock()-tStart)/ CLOCKS_PER_SEC);
+    auto end = get_time::now();
+    auto diff = end - start;
+    cout<<"Elapsed time is :  "<< chrono::duration_cast<ms>(diff).count()<<" ms "<<endl;
 
 return 0;
 }
