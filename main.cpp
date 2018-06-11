@@ -5,11 +5,12 @@
 #include <vector>
 #include "team.h"
 #include "group.h"
+#include <time.h>
 
 using namespace std;
 
 int main(){
-
+    clock_t tStart = clock();
 
     group* group1 = new group(new team("Rusia",70),new team("Arabia",72),new team("Egipto",78),new team("Uruguay",85));
     group* group2 = new group(new team("Portugal",89),new team("Espana",93),new team("Marruecos",75),new team("Iran",74));
@@ -20,8 +21,8 @@ int main(){
     group* group7 = new group(new team("Belgica",89),new team("Panama",70),new team("Tunez",78),new team("Inglaterra",87));
     group* group8 = new group(new team("Polonia",88),new team("Senegal",76),new team("Colombia",86),new team("Japon",80));
 
-    //cout << "Nombre "<<group1->team1->name;
-    for(int i = 0; i<10000;i++){
+    //openMP aqui
+    for(int i = 0; i<100000;i++){
         group1->generateGroupResults();
         group2->generateGroupResults();
         group3->generateGroupResults();
@@ -78,6 +79,8 @@ int main(){
     for(int i = 0; i<4;i++ ){
         cout<< "TEAM -> "<<group8->teams[i]->name<<" PTS-> "<<group8->teams[i]->totalPts << " 1 lugar  " << group8->teams[i]->first << " 2 lugar " << group8->teams[i]->second << " 3 lugar " << group8->teams[i]->third << " 4 lugar "<<group8->teams[i]->fourth << endl;
     }
+
+    printf("Tiempo en ejecucion: %.2fs ",(double)(clock()-tStart)/ CLOCKS_PER_SEC);
 
 return 0;
 }
