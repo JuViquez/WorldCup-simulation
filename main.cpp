@@ -28,7 +28,14 @@ for(int y = 0; y<4;y++){
 }
 }
 
-int main(){
+int main(int argc, char *argv[]){
+
+    if(argc==1){
+	cerr<<"ERROR: Number of threads required"<<endl;
+	return 0;
+    }
+    int threads_qty = atoi(argv[1]);
+     
     auto start = get_time::now();
     
     group* group1 = new group(new team("Rusia",70),new team("Arabia",72),new team("Egipto",78),new team("Uruguay",85));
@@ -39,7 +46,9 @@ int main(){
     group* group6 = new group(new team("ALemania",94),new team("Mexico",82),new team("Suecia",85),new team("Corea",76));
     group* group7 = new group(new team("Belgica",89),new team("Panama",70),new team("Tunez",78),new team("Inglaterra",87));
     group* group8 = new group(new team("Polonia",88),new team("Senegal",76),new team("Colombia",86),new team("Japon",80));
-    #pragma omp parallel num_threads(4)
+
+    omp_set_num_threads(threads_qty);
+    #pragma omp parallel
     {
 	    group* group1T = new group(group1);
 	    group* group2T = new group(group2);
