@@ -18,32 +18,18 @@ group::group(team* t1,team* t2,team* t3,team* t4)
 
 void group::generateMatch(int t1, int t2){
     double porcentage = ((this->teams[t1]->rating*100)/(this->teams[t1]->rating+this->teams[t2]->rating))-10;
-    cout << this->teams[t1]->name << porcentage << " vs " << this->teams[t2]->name << endl;
     random_device rd;
     mt19937 rng(rd());
     uniform_int_distribution<int> uni(0,100);
     int random_int = uni(rng);
     if (random_int<21){
-        //empate
-        cout<<"EMPATE "<< random_int<<endl;
         this->teams[t1]->pts++;
         this->teams[t2]->pts++;
     }else if(random_int<21+porcentage){
-        //gana team 1
-        cout<<"GANO "<< this->teams[t1]->name <<random_int<<endl;
         this->teams[t1]->pts = this->teams[t1]->pts + 3;
     }else{
-        //gana team 2
-         cout<<"GANO "<< this->teams[t2]->name <<random_int<<endl;
         this->teams[t2]->pts = this->teams[t2]->pts + 3;
     }
-    cout<<"-----------------------------------------------------"<<endl;
-    /*
-    cout <<"porcentaje "<<porcentage<<endl;
-    for (int i = 0; i < 10; i++){
-        cout<<random_integer<<endl;
-        random_integer = uni(rng);
-    }*/
 }
 
 void group::generateGroupResults(){
@@ -53,6 +39,21 @@ void group::generateGroupResults(){
     generateMatch(2,1);
     generateMatch(0,2);
     generateMatch(1,3);
+    sort(this->teams.begin(),this->teams.end(),[](const team* lhs, const team* rhs){return lhs->pts > rhs->pts;});
+    for(int i = 0; i<4;i++){
+        //cout << " team "<<i<<group1->teams[i]->name << " points " <<group1->teams[i]->pts <<endl;
+        this->teams[i]->totalPts = this->teams[i]->pts + this->teams[i]->totalPts;
+        if(i==0){
+            this->teams[i]->first++;
+        }if(i==1){
+            this->teams[i]->second++;
+        }if(i==2){
+            this->teams[i]->third++;
+        }else{
+            this->teams[i]->fourth++;
+        }
+        this->teams[i]->pts = 0;
+    }
 }
 
 group::~group()

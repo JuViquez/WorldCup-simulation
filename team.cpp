@@ -6,6 +6,7 @@ team::team(string nameArg, int ratingArg)
 {
     this->name = nameArg;
     this->position = 0;
+    this->totalPts = 0;
     this->rating=ratingArg;
     this->pts=0;
     this->first=0;

@@ -10,6 +10,7 @@ class team
         virtual ~team();
         string name;
         int position;
+        int totalPts;
         int pts;
         int rating;
         int first;
