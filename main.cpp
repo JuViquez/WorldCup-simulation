@@ -60,7 +60,7 @@ int main(int argc, char *argv[]){
 	    group* group8T = new group(group8);
 	
 	    #pragma omp for
-	    for(int i = 0; i<10000;i++){
+	    for(int i = 0; i<500000;i++){
 		group1T->generateGroupResults();
 		group2T->generateGroupResults();
 		group3T->generateGroupResults();

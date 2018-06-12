@@ -1,6 +1,6 @@
-#PBS -N Worldcup_simulation
+#PBS -N WcSim-500K-3N-64T
 #PBS -q phi-n5h24
 #PBS -l nodes=3:ppn=1
 #PBS -l walltime=00:15:00
 
-time ./WcSim 64
+time ./WorldCup-simulation/WcSim 64
