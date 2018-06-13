@@ -7,6 +7,7 @@
 #include "group.h"
 #include <chrono>
 #include <omp.h>
+#include <mpi.h>
 #include <stdio.h>
 
 using namespace std;
@@ -34,9 +35,11 @@ int main(int argc, char *argv[]){
 	cerr<<"ERROR: Number of threads required"<<endl;
 	return 0;
     }
+    if(argc==2){
+	cerr<<"ERROR: Number of loops required" <<endl;
+    }
     int threads_qty = atoi(argv[1]);
-     
-    auto start = get_time::now();
+    int total_loops = atoi(argv[2]);
     
     group* group1 = new group(new team("Rusia",70),new team("Arabia",72),new team("Egipto",78),new team("Uruguay",85));
     group* group2 = new group(new team("Portugal",89),new team("Espana",93),new team("Marruecos",75),new team("Iran",74));
@@ -46,6 +49,22 @@ int main(int argc, char *argv[]){
     group* group6 = new group(new team("ALemania",94),new team("Mexico",82),new team("Suecia",85),new team("Corea",76));
     group* group7 = new group(new team("Belgica",89),new team("Panama",70),new team("Tunez",78),new team("Inglaterra",87));
     group* group8 = new group(new team("Polonia",88),new team("Senegal",76),new team("Colombia",86),new team("Japon",80));
+
+    auto start = get_time::now();
+    
+    int numprocs, rank, namelen;
+    char processor_name[MPI_MAX_PROCESSOR_NAME];
+
+    MPI_Init(NULL,NULL);
+    MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Get_processor_name(processor_name, &namelen);
+
+    cout<< "Number or processors: "<< numprocs << endl;
+    int loops_per_procs = total_loops/numprocs;
+    if(rank == numprocs-1 && total_loops%numprocs != 0){
+	loops_per_procs += total_loops%numprocs;
+    }
 
     omp_set_num_threads(threads_qty);
     #pragma omp parallel
@@ -60,7 +79,7 @@ int main(int argc, char *argv[]){
 	    group* group8T = new group(group8);
 	
 	    #pragma omp for
-	    for(int i = 0; i<500000;i++){
+	    for(int i = 0; i<loops_per_procs;i++){
 		group1T->generateGroupResults();
 		group2T->generateGroupResults();
 		group3T->generateGroupResults();
@@ -88,9 +107,12 @@ int main(int argc, char *argv[]){
 	    TotalPoints(group8, group8T);
 
     }
+    auto end = get_time::now();
+    if(rank == 0){
+       
     cout<<"--------------------------------------- GRUPO A --------------------------------------- "<<endl;
     sort(group1->teams.begin(),group1->teams.end(),[](const team* lhs, const team* rhs){return lhs->totalPts > rhs->totalPts;});
-    for(int i = 0; i<4;i++ ){
+         for(int i = 0; i<4;i++ ){
         cout<< "TEAM -> "<<group1->teams[i]->name<<" PTS-> "<<group1->teams[i]->totalPts << " 1 lugar  " << group1->teams[i]->first << " 2 lugar " << group1->teams[i]->second << " 3 lugar " << group1->teams[i]->third << " 4 lugar "<<group1->teams[i]->fourth << endl;
     }
 
@@ -135,9 +157,10 @@ int main(int argc, char *argv[]){
     for(int i = 0; i<4;i++ ){
         cout<< "TEAM -> "<<group8->teams[i]->name<<" PTS-> "<<group8->teams[i]->totalPts << " 1 lugar  " << group8->teams[i]->first << " 2 lugar " << group8->teams[i]->second << " 3 lugar " << group8->teams[i]->third << " 4 lugar "<<group8->teams[i]->fourth << endl;
     }
-    auto end = get_time::now();
     auto diff = end - start;
     cout<<"Elapsed time is :  "<< chrono::duration_cast<ms>(diff).count()<<" ms "<<endl;
-
+    }
+    
+MPI_Finalize();
 return 0;
 }

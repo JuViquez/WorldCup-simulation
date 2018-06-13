@@ -20,6 +20,7 @@ class team
         int fourth;
     protected:
     private:
+
 };
 
 #endif // TEAM_H

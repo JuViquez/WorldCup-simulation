@@ -1,6 +1,9 @@
+
 #PBS -N WcSim-500K-2N-64T
 #PBS -q gpu-n2h24
-#PBS -l nodes=2:ppn=1
+#PBS -l nodes=1:ppn=1
 #PBS -l walltime=00:15:00
 
 mpirun ./WorldCup-simulation/WcSim 128 1000000
+
+
